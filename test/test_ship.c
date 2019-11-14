@@ -42,7 +42,18 @@ void init_ship(Ship* ship)
 */
 }
 
+/* --------------------------- */
+void move_ship(Ship* ship, int move_x, int move_y)
+/* --------------------------- */
+{
+	if((move_x && ship->x == WINDOW_WIDTH) || (move_x < 0 && ship->x == 0))
+		return;
+	if((move_y && ship->y == WINDOW_HEIGHT) || (move_y < 0 && ship->y == 0))
+		return;
 
+	ship->x += ship->speed * move_x;
+	ship->y += ship->speed * move_y;
+}
 
 
 int main(int argc, char const *argv[])
@@ -63,6 +74,19 @@ int main(int argc, char const *argv[])
 	printf("| has_double  | %4d             |\n", gradius.has_double);
 	printf("| has_laser   | %4d             |\n", gradius.has_laser);
 	printf("| has_option  | %4d             |\n", gradius.has_option);
+
+	printf("\n test moving ship...\n");
+	printf("moving to the right\n");
+	printf("x = %d ->", gradius.x);
+	move_ship(&gradius, 1, 0);
+	printf(" x = %d\n", gradius.x);
+
+	printf("changing ship coordinates to bottom right border to test borders\n");
+	gradius.x = WINDOW_WIDTH;
+	gradius.y = WINDOW_HEIGHT;
+	printf("(x,y) = (%d,%d) -> ", gradius.x, gradius.y);
+	move_ship(&gradius, 1, 1);
+	printf("(x,y) = (%d,%d)\n", gradius.x, gradius.y);
 
 	return 0;
 }
