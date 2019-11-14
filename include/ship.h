@@ -18,6 +18,7 @@ typedef struct _ship {
 	int has_double; /* double shot upgrade */
 	int has_laser; /* laser upgrade */
 	int has_option; /* option upgrade */
+	int invulnerability_frames;
 	/*
 	Tir* projectiles; */ /* ship's projectiles */
 }Ship;

@@ -18,6 +18,7 @@ typedef struct _ship {
 	int has_double; /* double shot upgrade */
 	int has_laser; /* laser upgrade */
 	int has_option; /* option upgrade */
+	int invulnerability_frames; /* if hit by an enemy, invulnerable for some frames */
 	/*
 	Tir* projectiles; */ /* ship's projectiles */
 }Ship;
@@ -37,6 +38,8 @@ void init_ship(Ship* ship)
 	ship->has_double = 0;
 	ship->has_laser = 0;
 	ship->has_option = 0;
+
+	ship->invulnerability_frames = 0;
 /*
 	projectiles = (Tir *)malloc(sizeof(Tir) * 100);
 */
@@ -74,6 +77,7 @@ int main(int argc, char const *argv[])
 	printf("| has_double  | %4d             |\n", gradius.has_double);
 	printf("| has_laser   | %4d             |\n", gradius.has_laser);
 	printf("| has_option  | %4d             |\n", gradius.has_option);
+	printf("| inv_frames  | %4d             |\n", gradius.has_option);
 
 	printf("\n test moving ship...\n");
 	printf("moving to the right\n");

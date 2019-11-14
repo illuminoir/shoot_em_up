@@ -16,6 +16,7 @@ void init_ship(Ship* ship)
 	ship->has_double = 0;
 	ship->has_laser = 0;
 	ship->has_option = 0;
+	ship->invulnerability_frames = 0;
 /*
 	projectiles = (Tir *)malloc(sizeof(Tir) * 100);
 */
