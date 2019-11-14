@@ -5,8 +5,8 @@
 void init_ship(Ship* ship)
 /* --------------------------- */
 {
-	ship->x = WINDOW_SIZE_X / 20;
-	ship->y = (WINDOW_SIZE_Y / 2) /*- (SPRITE_SIZE / 2)*/; /* in the middle of the screen */
+	ship->x = WINDOW_WIDTH / 20;
+	ship->y = (WINDOW_HEIGHT / 2) /*- (SPRITE_SIZE / 2)*/; /* in the middle of the screen */
 
 	ship->health = 100;
 	ship->current_sprite = IDLE;
