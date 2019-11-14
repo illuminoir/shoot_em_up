@@ -24,4 +24,6 @@ typedef struct _ship {
 
 void init_ship(Ship* ship);
 
+void move_ship(Ship* ship, int move_x, int move_y);
+
 #endif

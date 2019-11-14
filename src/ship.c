@@ -20,3 +20,16 @@ void init_ship(Ship* ship)
 	projectiles = (Tir *)malloc(sizeof(Tir) * 100);
 */
 }
+
+/* --------------------------- */
+void move_ship(Ship* ship, int move_x, int move_y)
+/* --------------------------- */
+{
+	if((move_x && ship->x == WINDOW_WIDTH) || (move_x < 0 && ship->x == 0))
+		return;
+	if((move_y && ship->y == WINDOW_HEIGHT) || (move_y < 0 && ship->y == 0))
+		return;
+
+	ship->x += ship->speed * move_x;
+	ship->y += ship->speed * move_y;
+}
