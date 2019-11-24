@@ -32,7 +32,7 @@ bin/display_game.o: src/display_game.c include/display_game.h include/display_sh
 	$(CC) -o $@ $< $(CFLAGS) -c -lMLV
 
 bin/game.o: src/game.c include/game.h include/display_game.h include/collisions.h
-	$(CC) -o $@ $< $(CFLAGS) -c
+	$(CC) -o $@ $< $(CFLAGS) -c -lMLV -D_POSIX_C_SOURCE=199309L
 
 bin/main.o: src/main.c include/game.h
 	$(CC) -o $@ $< $(CFLAGS) -c

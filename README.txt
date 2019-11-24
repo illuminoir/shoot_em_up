@@ -14,3 +14,10 @@ amélioration-
 				y 	Coordonnée en y de la souris
 		-> MLV_get_mouse_button_state(MLV_mouse_button mouse_button);    (pour voir si tire ou pas)
 				mouse_button 	Code bouton souris
+
+
+
+
+
+liste circulaire, à revoir ? si y a deux trous dans la liste que faire ? solution mais perte d'efficacité, parcours de toute la liste anyway ?
+rajouter les hitbox dans les struct ship et enemy -> les coins nord-ouest et sud-est en tant que position

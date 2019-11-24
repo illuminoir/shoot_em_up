@@ -18,13 +18,15 @@ typedef struct _ship {
 	int has_double; /* double shot upgrade */
 	int has_laser; /* laser upgrade */
 	int has_option; /* option upgrade */
-	int invulnerability_frames;
-	/*
-	Tir* projectiles; */ /* ship's projectiles */
+	int invulnerability_frames; /* when hit become invulnerable for some time */
+	int shot_frames_wait; /* when the ship just shot wait a few frames to not overload the screen */
+	ShotList projectiles;
 }Ship;
 
 void init_ship(Ship* ship);
 
 void move_ship(Ship* ship, int move_x, int move_y);
+
+void add_projectile(Ship* ship, int x_proj, int y_proj);
 
 #endif
