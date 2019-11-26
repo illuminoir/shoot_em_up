@@ -8,7 +8,7 @@ CC=gcc
 CFLAGS=-Wall -ansi -pedantic -g
 
 gradius: bin/main.o bin/projectiles.o bin/ship.o bin/enemy.o bin/collisions.o bin/display_ship.o bin/display_enemies.o bin/display_game.o bin/game.o
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) -lMLV
 
 bin/projectiles.o: src/projectiles.c include/projectiles.h
 	$(CC) -o $@ $< $(CFLAGS) -c
@@ -41,6 +41,4 @@ bin/main.o: src/main.c include/game.h
 
 clean:
 	rm gradius
-	cd bin
-	rm *.o
-	cd ..
+	rm bin/*

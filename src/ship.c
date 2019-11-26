@@ -25,16 +25,22 @@ void init_ship(Ship* ship)
 void move_ship(Ship* ship, int move_x, int move_y)
 /* --------------------------- */
 {
-	if((move_x && ship->x + ship->speed >= WINDOW_WIDTH) || (move_x < 0 && ship->x - ship->speed <= 0))
+	/* if the ship will go out of borders */
+	if((move_x && ship->x + ship->speed >= WINDOW_WIDTH - SHIP_SIZE) || (move_x < 0 && ship->x - ship->speed <= 0))
 		return;
-	if((move_y && ship->y + ship->speed >= WINDOW_HEIGHT) || (move_y < 0 && ship->y - ship->speed <= 0))
+	if((move_y && ship->y + ship->speed >= WINDOW_HEIGHT - SHIP_SIZE) || (move_y < 0 && ship->y - ship->speed <= 0))
 		return;
+
+	switch(move_y){
+		case 0  : ship->current_sprite = IDLE; 			break;
+		case 1  : ship->current_sprite = MOVING_UP; 	break;
+		case -1 : ship->current_sprite = MOVING_DOWN; 	break;
+		default: break;
+	}
 
 	ship->x += ship->speed * move_x;
 	ship->y += ship->speed * move_y;
 }
-
-
 
 
 /* --------------------------- */

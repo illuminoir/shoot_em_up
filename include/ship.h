@@ -6,7 +6,8 @@
 #define IDLE 0
 #define MOVING_UP 1
 #define MOVING_DOWN 2
-/* #define SPRITE_SIZE ?? */
+#define SHIP_SIZE WINDOW_WIDTH / 15
+
 
 typedef struct _ship {
 	int x;
@@ -23,10 +24,22 @@ typedef struct _ship {
 	ShotList projectiles;
 }Ship;
 
+/* Initializes the Ship object with base values :
+ * Its starting position is in the middle of the screen, the base sprite is idle,
+ * speed is set to 1 and the upgrades are not acquired yet.
+ * Parameters :
+ * 		Ship* ship : pointer on the ship object to initialize */
 void init_ship(Ship* ship);
 
+/* Moves the ship.
+ * Adds move_x or move_y times the ship's speed to it's x or y coordinate respectively.
+ * Parameters :
+ * 		Ship* ship : pointer on the ship object to initialize
+ *		int move_x : vector to move the x coordinate (can be -1, 0 or 1) 
+ *		int move_y : vector to move the y coordinate (can be -1, 0 or 1) */
 void move_ship(Ship* ship, int move_x, int move_y);
 
+/* TODO */
 void add_projectile(Ship* ship, int x_proj, int y_proj);
 
 #endif
