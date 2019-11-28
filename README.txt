@@ -1,23 +1,9 @@
 PROJET README
 
 
-amélioration-
-- déplacer le vaisseau avec zqsd/wasd if qwerty (chercher si possibilité différents contrôles, sinon un menu pour les changer ?)
--------------
+enemies :
 
-- en plus de ^ viser avec la souris ?
-		-> MLV_get_mouse_position(int* x, int* y);
-				x 	Coordonnée en x de la souris
-				y 	Coordonnée en y de la souris
-		-> MLV_wait_mouse(int* x, int *y);           (pour le menu/cliquer sur des boutons/aller au niveau suivant);
-				x 	Coordonnée en x de la souris
-				y 	Coordonnée en y de la souris
-		-> MLV_get_mouse_button_state(MLV_mouse_button mouse_button);    (pour voir si tire ou pas)
-				mouse_button 	Code bouton souris
+dans l'idée, on a plusieurs types d'ennemis. je me charge de gérer les différents types, pour le moment il faudrait faire la création et suppression d'ennemis, je pense peut-être une liste dynamique qu'on realloc et memcpy ? 
 
+une fois les ennemis créés il faut faire leur mouvement (moi), ajout, suppression (besoin de re-arranger la liste ?)
 
-
-
-
-liste circulaire, à revoir ? si y a deux trous dans la liste que faire ? solution mais perte d'efficacité, parcours de toute la liste anyway ?
-rajouter les hitbox dans les struct ship et enemy -> les coins nord-ouest et sud-est en tant que position

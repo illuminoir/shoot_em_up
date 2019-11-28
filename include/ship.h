@@ -10,8 +10,7 @@
 
 
 typedef struct _ship {
-	int x;
-	int y;
+	Hitbox hb;
 	int health;
 	int current_sprite; /* gives the sprite index depending on the pressed key */
 	int speed; /* speed vector */
@@ -39,7 +38,19 @@ void init_ship(Ship* ship);
  *		int move_y : vector to move the y coordinate (can be -1, 0 or 1) */
 void move_ship(Ship* ship, int move_x, int move_y);
 
-/* TODO */
-void add_projectile(Ship* ship, int x_proj, int y_proj);
+/* comparison function for qsort */
+int compare_pos(const void* a, const void* b);
+
+/* arrange the list when "full" */
+void arrange_list_projectiles_ship(ShotList* shots);
+
+/* add a new projectile to the ship's list of projectiles */
+void add_projectile(Ship* ship, int x_proj, int y_proj, int speed, int vect_x, int vect_y);
+
+/* move all the projectiles */
+void move_ship_projectiles(Ship* ship);
+
+/* actualizes the frames for invulnerability and waiting between shots */
+void actualize_frames_ship(Ship* ship);
 
 #endif

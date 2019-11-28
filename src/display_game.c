@@ -1,4 +1,4 @@
-#include "../include/display_game.h"
+	#include "../include/display_game.h"
 
 
 /* --------------------------- */
@@ -17,9 +17,13 @@ void draw_stars(Stars* stars)
 void draw_game(Ship* ship, MLV_Image* img_ship, Stars* stars)
 /* --------------------------- */
 {
+	MLV_clear_window(MLV_COLOR_BLACK);
+	
 	draw_stars(stars);
-	/* draw_projectiles_ship() */
 	/* draw_projectiles_enemies() */
 	/* draw_enemies() */
 	draw_ship(ship, img_ship);
+	draw_projectiles_ship(ship);
+
+	MLV_actualise_window();
 }

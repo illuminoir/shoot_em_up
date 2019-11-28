@@ -1,8 +1,8 @@
 #include "../include/projectiles.h"
 
-/* --------------------------- */
+/* ----------------------- */
 void init_stars(Stars* stars)
-/* --------------------------- */
+/* ----------------------- */
 {
 	int i;
 
@@ -15,7 +15,10 @@ void init_stars(Stars* stars)
 
 }
 
-void move_stars(Stars* stars){
+/* ----------------------- */
+void move_stars(Stars* stars)
+/* ----------------------- */
+{
 	int i;
 
 	for(i = 0 ; i < MAX_STAR ; i++){
@@ -28,9 +31,9 @@ void move_stars(Stars* stars){
 }
 
 
-/* --------------------------- */
+/* ---------------------- */
 ShotList allocate_shotList()
-/* --------------------------- */
+/* ---------------------- */
 {
 	ShotList tmp;
 
@@ -38,9 +41,12 @@ ShotList allocate_shotList()
 	if(!(tmp.list))
 		;
 
-	tmp.debut = 0;
-	tmp.fin = 0;
-	tmp.capacite = MAX_CAPACITY;
+	tmp.index = 0;
+	tmp.capacity = MAX_CAPACITY;
+
+	tmp.active = (int*)malloc(sizeof(int) * MAX_CAPACITY);
+	if(!(tmp.active))
+		; 
 
 	return tmp;
 

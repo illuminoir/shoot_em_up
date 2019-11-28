@@ -9,8 +9,17 @@
 
 #define BILLION 1000000000
 
-int get_ship_event(MLV_Keyboard_button key, MLV_Button_state state, int* x, int* y);
+/* Depending on the keys pressed, get the ship event.
+ * Possible events are registered from keyboard presses and can be :
+ * Move to one of the 4 possible directions, create a new projectile, end the game.
+ * Parameters :
+ *		Ship* ship 				: pointer to the ship object
+ *		int* x					: the x of the vector if left or right is pressed, 0 if released.
+ *		int* y 					: the y of the vector if up or down is pressed, 0 if released. */
+int get_ship_event(Ship* ship, int* x, int* y);
 
+
+/* missing enemies */
 void main_loop(Ship* ship, Stars* stars);
 
 #endif

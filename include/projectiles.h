@@ -10,7 +10,17 @@
 
 #define MAX_STAR 100
 
-typedef struct stars{
+/* a hitbox is a square which we represent by saving the coordinates
+ * of its North-West and South-East corners and all the points in between
+ * those two are considered within the hitbox. */
+typedef struct _hitbox {
+	int x_NW; /* x of the North-West corner */
+	int y_NW; /* y of the North-West corner */
+	int x_SE; /* x of the South-East corner */
+	int y_SE; /* y of the South-East corner */
+}Hitbox;
+
+typedef struct _stars{
 	int x[MAX_STAR];
 	int y[MAX_STAR];
 	int size[MAX_STAR]; /* size in pixel */
@@ -21,15 +31,15 @@ typedef struct tir{
 	int x;
 	int y;
 	int speed;
-	int vect_x; 
-	int vect_y;
+	float vect_x; /* float so that we are not restricted to "square" angles */
+	float vect_y; /* same */
 }Shot;
 
 typedef struct _shotList{
 	Shot* list; /* malloc capacite * tirs qui sera le nb max de tirs possible a l'ecran (le calculer) */
-	int debut;
-	int fin;
-	int capacite;
+	int index;
+	int capacity;
+	int* active;
 }ShotList;
 
 /* Moves the background stars.

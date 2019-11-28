@@ -5,7 +5,9 @@
 #include "../include/display_enemies.h"
 #include <MLV/MLV_all.h>
 
-/* Displays the stars */
+/* Displays the stars
+ * Parameters :
+ *		Stars* stars 		: pointer to the stars structure */
 void draw_stars(Stars* stars);
 
 /* Displays the entirety of the game using MLV.

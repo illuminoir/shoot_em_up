@@ -1,16 +1,16 @@
 #include "../include/enemy.h"
 #include <assert.h>
 
-
+/*
 Enemy InitEnemy(int x, int y){
 	Enemy enemy;
 	enemy.x = x;
 	enemy.y = y;
 	/*enemy.tir = ;*/
-	enemy.vitesse = 1;
+/*	enemy.vitesse = 1;
 	return enemy;
-}
-
+}*/
+/*
 void MoveEnemy(Enemy *enemy){
 	assert(enemy != NULL);
 
@@ -18,7 +18,7 @@ void MoveEnemy(Enemy *enemy){
 		enemy->x -= enemy->vitesse;
 	}
 }
-
+*/
 void TirEnemy(Enemy enemy){
 
 }
