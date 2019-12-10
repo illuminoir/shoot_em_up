@@ -7,6 +7,8 @@
 #define MOVING_UP 1
 #define MOVING_DOWN 2
 #define SHIP_SIZE WINDOW_WIDTH / 15
+#define PROJECTILE_SIZE WINDOW_WIDTH / 80
+#define SHOT_FRAMES_WAIT 40
 
 
 typedef struct _ship {
@@ -38,19 +40,24 @@ void init_ship(Ship* ship);
  *		int move_y : vector to move the y coordinate (can be -1, 0 or 1) */
 void move_ship(Ship* ship, int move_x, int move_y);
 
-/* comparison function for qsort */
-int compare_pos(const void* a, const void* b);
+/* Add a new projectile to the ship's list of projectiles
+ * Parameters :
+ *		Ship* ship : pointer on the ship object
+ *		int x_proj : x position for the projectile
+ *		int y_proj : y position for the projectile
+ *		int speed  : speed for the projectile
+ *		int vect_x : x vector for the direction in which the projectiles goes
+ * 		int vect_y : y vector for the direction in which the projectiles goes */
+void add_projectile_ship(Ship* ship, int x_proj, int y_proj, int speed, int vect_x, int vect_y);
 
-/* arrange the list when "full" */
-void arrange_list_projectiles_ship(ShotList* shots);
-
-/* add a new projectile to the ship's list of projectiles */
-void add_projectile(Ship* ship, int x_proj, int y_proj, int speed, int vect_x, int vect_y);
-
-/* move all the projectiles */
+/* Move all the of the ship's projectiles 
+ * Parameters :
+ *		Ship* ship : pointer on the ship object, to move its projectiles */
 void move_ship_projectiles(Ship* ship);
 
-/* actualizes the frames for invulnerability and waiting between shots */
+/* Actualizes the frames for invulnerability and waiting between shots
+ * Parameters :
+ * 		Ship* ship : pointer to the ship object */
 void actualize_frames_ship(Ship* ship);
 
 #endif

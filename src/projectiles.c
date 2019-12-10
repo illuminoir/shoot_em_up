@@ -30,24 +30,54 @@ void move_stars(Stars* stars)
 	}
 }
 
-
 /* ---------------------- */
 ShotList allocate_shotList()
 /* ---------------------- */
 {
 	ShotList tmp;
 
-	tmp.list = (Shot *)malloc(sizeof(Shot) * MAX_CAPACITY);
+	/* allocate the list of shots */
+	tmp.list = (Shot *)malloc(sizeof(Shot) * MAX_CAPACITY_PROJECTILES);
 	if(!(tmp.list))
 		;
 
 	tmp.index = 0;
-	tmp.capacity = MAX_CAPACITY;
+	tmp.capacity = MAX_CAPACITY_PROJECTILES;
 
-	tmp.active = (int*)malloc(sizeof(int) * MAX_CAPACITY);
+	/* allocate the list of booleans */
+	tmp.active = (int*)calloc(MAX_CAPACITY_PROJECTILES, sizeof(int));
 	if(!(tmp.active))
 		; 
 
 	return tmp;
 
+}
+
+/* --------------------------------------- */
+int compare_pos(const void* a, const void* b)
+/* --------------------------------------- */
+{
+	Shot* sa = (Shot *)a;
+	Shot* sb = (Shot *)b;
+
+	return sa->hb.x_NW - sb->hb.x_NW;
+}
+
+/* --------------------------------------------- */
+void arrange_list_projectiles(ShotList* shots)
+/* --------------------------------------------- */
+{
+	int i;
+
+	/* sort the list by the projectiles' coordinates */
+	qsort(shots->list, MAX_CAPACITY_PROJECTILES, sizeof(Shot), compare_pos);
+
+	/* find the first inactive and set the index to that position */
+	for(i = 0 ; shots->list[i].hb.x_NW != -1 ; i++)
+		shots->active[i] = 1;
+	shots->index = i;
+
+	/* reset the booleans for the free space */
+	for(i = shots->index ; i < shots->capacity ; i++)
+		shots->active[i] = 0;
 }

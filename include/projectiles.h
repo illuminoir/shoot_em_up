@@ -6,7 +6,7 @@
 
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 900
-#define MAX_CAPACITY 100
+#define MAX_CAPACITY_PROJECTILES 50
 
 #define MAX_STAR 100
 
@@ -14,10 +14,10 @@
  * of its North-West and South-East corners and all the points in between
  * those two are considered within the hitbox. */
 typedef struct _hitbox {
-	int x_NW; /* x of the North-West corner */
-	int y_NW; /* y of the North-West corner */
-	int x_SE; /* x of the South-East corner */
-	int y_SE; /* y of the South-East corner */
+	float x_NW; /* x of the North-West corner */
+	float y_NW; /* y of the North-West corner */
+	float x_SE; /* x of the South-East corner */
+	float y_SE; /* y of the South-East corner */
 }Hitbox;
 
 typedef struct _stars{
@@ -28,13 +28,15 @@ typedef struct _stars{
 }Stars;
 
 typedef struct tir{
-	int x;
-	int y;
+	Hitbox hb;
 	int speed;
 	float vect_x; /* float so that we are not restricted to "square" angles */
 	float vect_y; /* same */
 }Shot;
 
+/* A list of shots is represented as a list with a capacity and an index, we keep on adding values to it until
+ * index reaches capacity and when it is so we arrange it. Arrangement sorts the list so that the
+ * inactive shots are put behind and we change the index so that there is free room again */
 typedef struct _shotList{
 	Shot* list; /* malloc capacite * tirs qui sera le nb max de tirs possible a l'ecran (le calculer) */
 	int index;
@@ -61,5 +63,16 @@ void init_stars(Stars* stars);
  * Parameters : none
  * Return : the allocated list */
 ShotList allocate_shotList();
+
+/* comparison function for qsort function called in arrange_list_projectiles() */
+int compare_pos(const void* a, const void* b);
+
+/* Arranges the list when "full" i.e. when index equals capacity.
+ * arrangement is done so : sort the projectiles by their coordinates (all the inactive ones having -1 as coordinates),
+ * go through the list until finding a projectile that is inactive, this becomes the new index for the list and
+ * all the values from index to the end of the list become free.
+ * Parameters :
+ * 		ShotList* shots : pointer to the list to arrange */
+void arrange_list_projectiles(ShotList* shots);
 
 #endif

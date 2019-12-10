@@ -4,17 +4,15 @@
 
 int main(int argc, char const *argv[])
 {
-	Ship ship;
-	Stars stars;
+	Game game;
 
 	srand(time(NULL));
 
 	MLV_create_window("oui", "oui", WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	init_ship(&ship);
-	init_stars(&stars);
+	init_game(&game);
 
-	main_loop(&ship, &stars);
+	main_loop(&game);
 
 	return 0;
 }
