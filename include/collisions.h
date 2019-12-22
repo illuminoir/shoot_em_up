@@ -31,7 +31,14 @@ void collision_ship_enemy(Ship* ship, Enemy* enemy);
  * Parameters :
  *		ShotList* projectiles : list of the ship's projectiles
  *		int index_proj 		  :	index of the projectile colliding
- *		Enemy* enemy 		  : the enemy colliding */
-void collision_ship_projectile_enemy(ShotList* projectiles, int index_proj, Enemy* enemy);
+ *		Enemy* enemy 		  : the enemy colliding 
+ * Return : 1 if an enemy died to generate a bonus, 0 otherwise */
+int collision_ship_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy);
+
+void collision_ship_bonus(int* current_bonus, Bonus* bonuses, int index_bonus);
+
+int collision_option_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy);
+
+void get_smaller_hitboxes(Hitbox hb1, Hitbox* smaller_hb1, int size_unit_hb1, Hitbox hb2, Hitbox* smaller_hb2, int size_unit_hb2);
 
 #endif

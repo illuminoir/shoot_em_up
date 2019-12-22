@@ -3,6 +3,8 @@
 /* -------------------------------------- */
 int collision_hitboxes(Hitbox h1, Hitbox h2)
 /* -------------------------------------- */
+
+/*
 {
 	if((h1.x_NW < h2.x_SE && h1.x_SE > h2.x_NW) 
 		&& (h1.y_NW < h2.y_SE && h1.y_SE > h2.y_NW))
@@ -12,6 +14,20 @@ int collision_hitboxes(Hitbox h1, Hitbox h2)
 		return 1;
 	return 0;
 }
+*/
+
+{
+	if(((h1.x_NW <= h2.x_NW) && (h1.x_SE >= h2.x_SE)) 
+		&& ((h1.y_NW <= h2.y_NW) && (h1.y_SE >= h2.y_SE)))
+		return 1;
+
+	if(((h2.x_NW <= h1.x_NW) && (h2.x_SE >= h1.x_SE)) 
+		&& ((h2.y_NW <= h1.y_NW) && (h2.y_SE >= h1.y_SE)))
+		return 1;
+
+	return 0;
+}
+
 
 /* --------------------------------------------------------------------------------- */
 void collision_ship_enemy_projectile(Ship* ship, ShotList* projectiles, int index_proj)
@@ -19,7 +35,7 @@ void collision_ship_enemy_projectile(Ship* ship, ShotList* projectiles, int inde
 {
 	/* the ship is hit, loses health and is invulnerable for some time */
 	ship->health -= 10;
-	ship->invulnerability_frames = 60;
+	ship->invulnerability_frames = 120;
 
 	/* enemy projectile hit the ship, remove it */
 	projectiles->list[index_proj].hb.x_NW = -1;
@@ -36,36 +52,74 @@ void collision_ship_enemy(Ship* ship, Enemy* enemy)
 	ship->invulnerability_frames = 120;	
 }
 
-/* ----------------------------------------------------------------------------------- */
-void collision_ship_projectile_enemy(ShotList* projectiles, int index_proj, Enemy* enemy)
-/* ----------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------- */
+int collision_ship_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy)
+/* ---------------------------------------------------------------------------------- */
 {
-	int i;
-
-	for(i = 0 ; i < projectiles->capacity ; i++){
-		printf("(%d)", projectiles->active[i]);
-	}
-
 	/* ship projectile hit an enemy, remove it */
-	projectiles->list[index_proj].hb.x_NW = -1;
-	projectiles->list[index_proj].hb.y_NW = -1;
-	projectiles->active[index_proj] = 0;
+	ship->projectiles.list[index_proj].hb.x_NW = -1;
+	ship->projectiles.list[index_proj].hb.y_NW = -1;
+	ship->projectiles.active[index_proj] = 0;
 
 	/* enemy loses health */
+	if(ship->has_laser)
+		enemy->health -= 10;
 	enemy->health -= 10;
 
-	/* if the enemy dies, remove it */
-	if(!(enemy->health)){
-		printf("\nMORT\n");
-		enemy->hb.x_NW = -1;
-		enemy->hb.y_NW = -1;
-	}
+	/* if the enemy dies, try to generate a bonus then remove it */
+	if(enemy->health < 0)
+		return 1;
 
-	printf("\n");
-
-	for(i = 0 ; i < projectiles->capacity ; i++){
-		printf("(%d)", projectiles->active[i]);
-	}
-
-	printf("\n\n");
+	return 0;
 }
+
+/* ------------------------------------------------------------------------ */
+void collision_ship_bonus(int* current_bonus, Bonus* bonuses, int index_bonus)
+/* ------------------------------------------------------------------------ */
+{
+	/* if max bonus isn't reached */
+	if(*current_bonus < 5)
+		*current_bonus += 1;
+
+	/* disable the bonus */
+	bonuses[index_bonus].hb.x_NW = -1;
+	bonuses[index_bonus].hb.y_NW = -1; 
+}
+
+/* -------------------------------------- */
+int collision_option_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy)
+/* ------------------------------------------ */
+{
+	/* option's projectile hit an enemy, remove it */
+	ship->option.projectiles.list[index_proj].hb.x_NW = -1;
+	ship->option.projectiles.list[index_proj].hb.y_NW = -1;
+	ship->option.projectiles.active[index_proj] = 0;
+
+	/* enemy loses health */
+	if(ship->has_laser)
+		enemy->health -= 10;
+	enemy->health -= 10;
+
+	/* if the enemy dies, try to generate a bonus then remove it */
+	if(enemy->health < 0)
+		return 1;
+
+	return 0;
+}
+
+
+/*
+void get_smaller_hitboxes(Hitbox hb1, Hitbox* smaller_hb1, int size_unit_hb1, Hitbox hb2, Hitbox* smaller_hb2, int size_unit_hb2){
+	int diff_hb1 = size_unit_hb1 / 200;
+	int diff_hb2 = size_unit_hb2 / 200;
+
+	smaller_hb1->x_NW = hb1.x_NW + diff_hb1;
+	smaller_hb1->y_NW = hb1.y_NW + diff_hb1;
+	smaller_hb1->x_NW = hb1.x_SE - diff_hb1;
+	smaller_hb1->y_NW = hb1.y_SE - diff_hb1;
+
+	smaller_hb2->x_NW = hb2.x_NW + diff_hb2;
+	smaller_hb2->y_NW = hb2.y_NW + diff_hb2;
+	smaller_hb2->x_NW = hb2.x_SE - diff_hb2;
+	smaller_hb2->y_NW = hb2.y_SE - diff_hb2;
+}*/

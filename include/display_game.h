@@ -10,8 +10,11 @@ typedef struct _game{
 	Ship player;
 	Stars stars;
 	Enemy* enemies; /* dynamic list */
+	Bonus* bonuses;
 	int index_enemy;
+	int index_bonus;
 	int wait_enemy_spawn;
+	int current_bonus;
 }Game;
 
 /* Displays the stars
@@ -19,10 +22,13 @@ typedef struct _game{
  *		Stars* stars 		: pointer to the stars structure */
 void draw_stars(Stars* stars);
 
+void draw_options(Game* game);
+
+void draw_bonuses(Game* game);
+
 /* Displays the entirety of the game using MLV.
  * Parameters : 
- *		Game* game 			: pointer to the game state
- *		MLV_Image* img_ship : pointer to the ship's sprite*/
-void draw_game(Game* game, MLV_Image* img_ship);
+ *		Game* game 			: pointer to the game state*/
+void draw_game(Game* game);
 
 #endif

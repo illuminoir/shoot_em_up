@@ -6,9 +6,12 @@ void init_game(Game* game)
 {
 	init_ship(&(game->player));
 	init_stars(&(game->stars));
-	game->enemies = (Enemy *)malloc(sizeof(Enemy) * ENEMY_MAX_CAPACITY);
+	game->enemies = (Enemy *)calloc(sizeof(Enemy), ENEMY_MAX_CAPACITY);
+	game->bonuses = (Bonus *)calloc(sizeof(Bonus), BONUS_MAX_CAPACITY);
 	game->index_enemy = 0;
+	game->index_bonus = 0;
 	game->wait_enemy_spawn = 0;
+	game->current_bonus = 0;
 
 	/* faire un truc pour faire spawn une lignee comme sur gradius */
 	/*if(e->nature == LONE_PROJECTILE)
@@ -25,6 +28,16 @@ int compare_enemy(const void* a, const void* b)
 	return sb->hb.x_NW - sa->hb.x_NW;
 }
 
+/* ----------------------------------------- */
+int compare_bonus(const void* a, const void* b)
+/* ----------------------------------------- */
+{
+	Bonus* ba = (Bonus *)a;
+	Bonus* bb = (Bonus *)b;
+
+	return bb->hb.x_NW - ba->hb.x_NW;
+}
+
 /* ----------------------------------------------------- */
 void arrange_list_enemies(Enemy* enemies, int* index_enemy)
 /* ----------------------------------------------------- */
@@ -35,11 +48,28 @@ void arrange_list_enemies(Enemy* enemies, int* index_enemy)
 	qsort(enemies, ENEMY_MAX_CAPACITY, sizeof(Enemy), compare_enemy);
 
 	/* find the first inactive enemy */
-	for(i = 0 ; enemies[i].hb.x_NW != -1 ; i++)
+	for(i = 0 ; enemies[i].hb.x_NW != -1 && i < ENEMY_MAX_CAPACITY ; i++)
 		;
 
 	/* the index becomes the first inactive enemy */
 	*index_enemy = i;
+}
+
+/* ----------------------------------------------------- */
+void arrange_list_bonuses(Bonus* bonuses, int* index_bonus)
+/* ----------------------------------------------------- */
+{
+	int i;
+
+	/* sort the bonuses by their coordinates */
+	qsort(bonuses, BONUS_MAX_CAPACITY, sizeof(Bonus), compare_bonus);
+
+	/* find the first inactive bonus */
+	for(i = 0 ; bonuses[i].hb.x_NW != -1 && i < BONUS_MAX_CAPACITY ; i++)
+		;
+
+	/* the index becomes the first inactive bonus */
+	*index_bonus = i;
 }
 
 /* ------------------------- */
@@ -51,6 +81,14 @@ void generate_enemy(Game* game)
 		game->wait_enemy_spawn--;
 		return;
 	}
+
+	/* if the list of enemies is full, arrange it */
+	if(game->index_enemy == ENEMY_MAX_CAPACITY)
+		arrange_list_enemies(game->enemies, &(game->index_enemy));
+
+	if(game->index_enemy == ENEMY_MAX_CAPACITY)
+		return;
+
 	/* set a random nature for the new generated enemy */
 	game->enemies[game->index_enemy].nature = rand() % 4;
 
@@ -60,16 +98,36 @@ void generate_enemy(Game* game)
 	/* increase the index */
 	game->index_enemy++;
 
-	/* if the list of enemies is full, arrange it */
-	if(game->index_enemy == ENEMY_MAX_CAPACITY)
-		arrange_list_enemies(game->enemies, &(game->index_enemy));
-
 	/* set the wait time until new enemy generation */
 	game->wait_enemy_spawn = WAIT_ENEMY_SPAWN;
 }
 
 /* ---------------------------------------- */
-int get_ship_event(Ship* ship, int* x, int* y)
+void generate_bonus(Game *game, Enemy* enemy)
+/* ---------------------------------------- */
+{
+	int rand_try;
+
+	rand_try = rand() % 100;
+
+	/* try to generate a bonus depending on the drop rate */
+	if(rand_try < enemy->drop_rate){
+		init_bonus(&(game->bonuses[game->index_bonus]), enemy->hb.x_NW, enemy->hb.y_NW);
+
+		game->index_bonus++;
+
+		/* if the list of bonuses is full */
+		if(game->index_bonus == BONUS_MAX_CAPACITY)
+			arrange_list_bonuses(game->bonuses, &(game->index_bonus));
+	}
+
+	/* set the enemy as dead/inactive */
+	enemy->hb.x_NW = -1;
+	enemy->hb.y_NW = -1;
+}
+
+/* ---------------------------------------- */
+int get_ship_event(Ship* ship, int* x, int* y, int* current_bonus)
 /* ---------------------------------------- */
 {
 		/* if escape is pressed, quit the same */
@@ -91,6 +149,9 @@ int get_ship_event(Ship* ship, int* x, int* y)
 		if(MLV_get_keyboard_state(MLV_KEYBOARD_SPACE) == MLV_PRESSED)
 			add_projectile_ship(ship, ship->hb.x_SE + 5, ship->hb.y_NW + (SHIP_SIZE / 2), 3, 1, 0);
 
+		if(MLV_get_keyboard_state(MLV_KEYBOARD_LCTRL) == MLV_PRESSED)
+			consume_bonus(current_bonus, ship);
+
 		return 0;
 }
 
@@ -98,7 +159,7 @@ int get_ship_event(Ship* ship, int* x, int* y)
 void check_all_collisions(Game* game)
 /* ------------------------------- */
 {
-	int i, j, k;
+	int i, j, k, l, m;
 
 	/* if the player is invulnerable, cannot be hit */
 	if(game->player.invulnerability_frames)
@@ -111,9 +172,12 @@ void check_all_collisions(Game* game)
 			continue;
 		/* if the enemy is a cannon, check collisions with all of its projectiles */
 		if(game->enemies[i].nature == CANNON){
-			for(j = 0 ; j < game->enemies[i].projectiles.index ; j++)
+			for(j = 0 ; j < game->enemies[i].projectiles.index ; j++){
+				if(!(game->enemies[i].projectiles.active[j]))
+					continue;
 				if(collision_hitboxes(game->player.hb, game->enemies[i].projectiles.list[j].hb))
 					collision_ship_enemy_projectile(&(game->player), &(game->enemies[i].projectiles), j);
+			}
 		}
 		/* check for collisions with the enemy */
 		if(collision_hitboxes(game->player.hb, game->enemies[i].hb))
@@ -121,12 +185,43 @@ void check_all_collisions(Game* game)
 		/* check to see if the ship's projectiles hit the enemy */
 		for(k = 0 ; k < game->player.projectiles.index ; k++){
 			/* if the projectile is inactive */
-			if(game->player.projectiles.list[k].hb.x_NW == -1)
+			if(!(game->player.projectiles.active[k]))
 				continue;
 			/* check for collision between the enemy and the ship's projectiles */
-			if(collision_hitboxes(game->player.projectiles.list[k].hb, game->enemies[i].hb))
-				collision_ship_projectile_enemy(&(game->player.projectiles), k, &(game->enemies[i]));
+			if(collision_hitboxes(game->player.projectiles.list[k].hb, game->enemies[i].hb)){
+				if(collision_ship_projectile_enemy(&(game->player), k, &(game->enemies[i]))){
+					MLV_play_sound(enemy_death, 1.0);
+					generate_bonus(game, &(game->enemies[i]));
+					break;
+				}
+				else
+					MLV_play_sound(enemy_hit, 1.0);
+			}
 		}
+		/* if the player has the option upgrade */
+		if(game->player.has_option){
+			for(m = 0 ; m < game->player.option.projectiles.index ; m++){
+				/* if the projectile is inactive */
+				if(!(game->player.option.projectiles.active[m]))
+					continue;
+				/* check for collision between the option's projectile and the enemy */
+				if(collision_hitboxes(game->player.option.projectiles.list[m].hb, game->enemies[i].hb)){
+					if(collision_option_projectile_enemy(&(game->player), m, &(game->enemies[i]))){
+						MLV_play_sound(enemy_death, 1.0);
+						generate_bonus(game, &(game->enemies[i]));
+						break;
+					}
+				}
+			}
+		}
+	}
+	/* check if the player grabs a bonus */
+	for(l = 0 ; l < game->index_bonus ; l++){
+		/* if the bonus is inactive */
+		if(game->bonuses[l].hb.x_NW == -1)
+			continue;
+		if(collision_hitboxes(game->player.hb, game->bonuses[l].hb))
+			collision_ship_bonus(&(game->current_bonus), game->bonuses, l);
 	}
 }
 
@@ -134,11 +229,24 @@ void check_all_collisions(Game* game)
 void move_all_entities(Game* game, int move_x, int move_y)
 /* ---------------------------------------------------- */
 {
-		move_ship(&(game->player), move_x, move_y);
-		move_all_enemies(game->enemies, game->index_enemy);
-		move_ship_projectiles(&(game->player));
-		/* move_enemy_projectiles() */
-		move_stars(&(game->stars));
+	move_ship(&(game->player), move_x, move_y);
+	move_all_enemies(game->enemies, game->index_enemy);
+	move_all_bonuses(game->bonuses, game->index_bonus);
+	move_ship_projectiles(&(game->player));
+	move_all_enemies_projectiles(game->enemies, game->index_enemy);
+	move_stars(&(game->stars));
+}
+
+/* --------------------------- */
+void actualize_frames(Game* game)
+/* --------------------------- */
+{
+	int i;
+	
+	actualize_frames_ship(&(game->player));
+	
+	for(i = 0 ; i < game->index_enemy ; i++)
+		actualize_frames_enemy(&(game->enemies[i]));
 }
 
 /* -------------------- */
@@ -148,7 +256,13 @@ void main_loop(Game* game)
 	struct timespec new, last;
 	double accum;
 	int move_x, move_y;
-	MLV_Image* img_ship;
+	int i;
+
+	MLV_init_audio();
+
+	load_all_data();
+
+	MLV_play_music(music, 0.3, -1);
 
 	/* Main loop over the frames... */
 	while(game->player.health){
@@ -157,26 +271,28 @@ void main_loop(Game* game)
 		/* Get the time in nanosecond at the frame beginning */
 		clock_gettime(CLOCK_REALTIME, &last);
 
-		load_sprite_ship(&(game->player), &img_ship);
-		actualize_frames_ship(&(game->player));
+		actualize_frames(game);
 
 		/* Display of the current frame */
 		/* THIS FUNCTIONS CALLS MLV_actualise_window A SINGLE TIME */
-		draw_game(game, img_ship);
+		draw_game(game);
 
 		/* We get here at most one keyboard event each frame */
 		/* Event resolution here... */
-		if(get_ship_event(&(game->player), &move_x, &move_y))
+		if(get_ship_event(&(game->player), &move_x, &move_y, &(game->current_bonus)))
 			break;
 
 		generate_enemy(game);
+
+		for(i = 0 ; i < game->index_enemy ; i++)
+			if(game->enemies[i].nature == CANNON)
+				enemy_add_projectile(&(game->enemies[i]));
 
 		/* Moves of the entities on the board */
 		move_all_entities(game, move_x, move_y);
 
 		/* Collision resolutions */
 		check_all_collisions(game);
-			;
 
 		/* Get the time in nanosecond at the frame ending */
 		clock_gettime(CLOCK_REALTIME, &new);
@@ -184,7 +300,12 @@ void main_loop(Game* game)
 		accum = (new.tv_sec - last.tv_sec) + ((new.tv_nsec - last.tv_nsec) / BILLION);
 
 		/* Force wait if the frame was too short */
-		if(accum < (1.0 / 60.0))
-			MLV_wait_milliseconds((int)((1.0 / 60.0) - accum * 1000));
+		if(accum < (1.0 / 30.0))
+			MLV_wait_milliseconds((int)((1.0 / 30.0) - accum * 1000));
 	}
+
+	MLV_stop_music();
+	MLV_free_audio();
+
+	free_everything();
 }

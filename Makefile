@@ -7,17 +7,20 @@
 CC=gcc
 CFLAGS=-Wall -ansi -pedantic -g
 
-gradius: bin/main.o bin/projectiles.o bin/ship.o bin/enemy.o bin/collisions.o bin/display_ship.o bin/display_enemies.o bin/display_game.o bin/game.o
-	$(CC) -o $@ $^ $(CFLAGS) -lMLV
+gradius: bin/main.o bin/loading.o bin/projectiles.o bin/ship.o bin/enemy.o bin/collisions.o bin/display_ship.o bin/display_enemies.o bin/display_game.o bin/game.o
+	$(CC) -o $@ $^ $(CFLAGS) -lMLV -lm
+
+bin/loading.o: src/loading.c include/loading.h
+	$(CC) -o $@ $< $(CFLAGS) -c
 
 bin/projectiles.o: src/projectiles.c include/projectiles.h
 	$(CC) -o $@ $< $(CFLAGS) -c
 
 bin/ship.o: src/ship.c include/ship.h include/projectiles.h
-	$(CC) -o $@ $< $(CFLAGS) -c
+	$(CC) -o $@ $< $(CFLAGS) -c -lMLV
 
 bin/enemy.o: src/enemy.c include/enemy.h include/projectiles.h
-	$(CC) -o $@ $< $(CFLAGS) -c
+	$(CC) -o $@ $< $(CFLAGS) -c -lm
 
 bin/collisions.o: src/collisions.c include/collisions.h include/ship.h include/enemy.h
 	$(CC) -o $@ $< $(CFLAGS) -c

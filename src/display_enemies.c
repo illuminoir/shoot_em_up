@@ -1,74 +1,20 @@
 #include "../include/display_enemies.h"
 
-
-/* ----------------------------------------------------------- */
-void get_sprite_patterned(MLV_Image** sprite, int current_sprite)
-/* ----------------------------------------------------------- */
+/* -------------------------------------------- */
+void draw_enemy_projectiles(ShotList* projectiles)
+/* -------------------------------------------- */
 {
-	/* load the correct sprite depending on the enemy's movement */
-	switch(current_sprite){
-		case PATTERNED_SPRITE_IDLE : *sprite = MLV_load_image("img/enemy_sprite_1.png"); break;
-		case PATTERNED_SPRITE_UP : *sprite = MLV_load_image("img/enemy_sprite_2.png"); break;
-		case PATTERNED_SPRITE_DOWN : *sprite = MLV_load_image("img/enemy_sprite_3.png"); break;
-		default: break;
-	}
+	int i;
 
-	/* resize the loaded sprite */
-	MLV_resize_image_with_proportions(*sprite, PATTERNED_SIZE, PATTERNED_SIZE);
+	for(i = 0 ; i < projectiles->index; i++)
+		MLV_draw_image(cannon_projectile, (int)projectiles->list[i].hb.x_NW, (int)projectiles->list[i].hb.y_NW);
 }
-
-/* ----------------------------------------------------------------- */
-void get_sprite_lone_projectile(MLV_Image** sprite, int current_sprite)
-/* ----------------------------------------------------------------- */
-{
-	/* load the correct sprite depending on the enemy's movement */
-	switch(current_sprite){
-		case LONE_PROJECTILE_SPRITE_1 : *sprite = MLV_load_image("img/enemy_lone_shot_1.png"); break;
-		case LONE_PROJECTILE_SPRITE_2 : *sprite = MLV_load_image("img/enemy_lone_shot_2.png"); break;
-	}
-
-	/* resize the loaded sprite */
-	MLV_resize_image_with_proportions(*sprite, LONE_PROJECTILE_SIZE, LONE_PROJECTILE_SIZE);
-}
-
-/* -------------------------------------------------------- */
-void get_sprite_cannon(MLV_Image** sprite, int current_sprite)
-/* -------------------------------------------------------- */
-{
-	/* load the correct sprite depending on the enemy's movement */
-	switch(current_sprite){
-		case CANNON_IDLE : *sprite = MLV_load_image("img/cannon_sprite_1.png"); break;
-		case CANNON_ANGLE_1 : *sprite = MLV_load_image("img/cannon_sprite_2.png"); break;
-		case CANNON_ANGLE_2 : *sprite = MLV_load_image("img/cannon_sprite_3.png"); break;
-	}
-
-	/* resize the loaded sprite */
-	MLV_resize_image_with_proportions(*sprite, CANNON_SIZE, CANNON_SIZE);
-}
-
-/* ---------------------------------------------------------- */
-void get_sprite_spinning(MLV_Image** sprite, int current_sprite)
-/* ---------------------------------------------------------- */
-{
-	/* load the correct sprite depending on the enemy's movement */
-	switch(current_sprite){
-		case SPINNING_SPRITE_1 : *sprite = MLV_load_image("img/spinning_enemy_sprite_1.png"); break;
-		case SPINNING_SPRITE_2 : *sprite = MLV_load_image("img/spinning_enemy_sprite_2.png"); break;
-		case SPINNING_SPRITE_3 : *sprite = MLV_load_image("img/spinning_enemy_sprite_3.png"); break;
-		case SPINNING_SPRITE_4 : *sprite = MLV_load_image("img/spinning_enemy_sprite_4.png"); break;
-	}
-
-	/* resize the loaded sprite */
-	MLV_resize_image_with_proportions(*sprite, SPINNING_SIZE, SPINNING_SIZE);
-}
-
 
 /* -------------------------------------- */
 void draw_enemies(Enemy* enemies, int index)
 /* -------------------------------------- */
 {
 	int i;
-	MLV_Image* sprite;
 
 	for(i = 0 ; i < index ; i++){
 		/* if the enemy is deactivated */
@@ -76,13 +22,36 @@ void draw_enemies(Enemy* enemies, int index)
 			continue;
 		/* get the sprite depending on the nature */
 		switch(enemies[i].nature){
-			case PATTERNED : get_sprite_patterned(&sprite, enemies[i].current_sprite); break;
-			case LONE_PROJECTILE : get_sprite_lone_projectile(&sprite, enemies[i].current_sprite); break;
-			case CANNON : get_sprite_cannon(&sprite, enemies[i].current_sprite); break;
-			case SPINNING: get_sprite_spinning(&sprite, enemies[i].current_sprite); break;
+			case PATTERNED : 
+				switch(enemies[i].current_sprite){
+					case PATTERNED_SPRITE_IDLE : MLV_draw_image(patterned_sprite_idle, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					case PATTERNED_SPRITE_UP : MLV_draw_image(patterned_sprite_up, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					case PATTERNED_SPRITE_DOWN : MLV_draw_image(patterned_sprite_down, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					default: break;
+				} break;
+			case LONE_PROJECTILE :
+				switch(enemies[i].current_sprite){
+					case LONE_PROJECTILE_SPRITE_1 : MLV_draw_image(lone_projectile_first, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					case LONE_PROJECTILE_SPRITE_2 : MLV_draw_image(lone_projectile_second, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					default: break;
+				} break;
+			case CANNON :
+				draw_enemy_projectiles(&(enemies[i].projectiles));
+				switch(enemies[i].current_sprite){
+					case CANNON_IDLE : MLV_draw_image(cannon_idle, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					case CANNON_ANGLE_1 : MLV_draw_image(cannon_angle_1, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					case CANNON_ANGLE_2 : MLV_draw_image(cannon_angle_2, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					default: break;
+				} break;
+			case SPINNING:
+				switch(enemies[i].current_sprite){
+					case SPINNING_SPRITE_1 : MLV_draw_image(spinning_sprite_1, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					case SPINNING_SPRITE_2 : MLV_draw_image(spinning_sprite_2, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					case SPINNING_SPRITE_3 : MLV_draw_image(spinning_sprite_3, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					case SPINNING_SPRITE_4 : MLV_draw_image(spinning_sprite_4, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW); break;
+					default: break;
+				} break;
 			default: break;
 		}
-		/* draw the sprite */
-		MLV_draw_image(sprite, (int)enemies[i].hb.x_NW, (int)enemies[i].hb.y_NW);
 	}
 }

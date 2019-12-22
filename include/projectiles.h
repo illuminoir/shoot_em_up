@@ -2,10 +2,8 @@
 #define __PROJECTILE__
 #include <stdio.h>
 #include <stdlib.h>
+#include "../include/loading.h"
 
-
-#define WINDOW_WIDTH 1600
-#define WINDOW_HEIGHT 900
 #define MAX_CAPACITY_PROJECTILES 50
 
 #define MAX_STAR 100
@@ -21,15 +19,15 @@ typedef struct _hitbox {
 }Hitbox;
 
 typedef struct _stars{
-	int x[MAX_STAR];
-	int y[MAX_STAR];
+	int x[MAX_STAR]; /* x coordinate for each star */
+	int y[MAX_STAR]; /* y coordinate for each star */
 	int size[MAX_STAR]; /* size in pixel */
 	int speed; /* moving speed of the stars */
 }Stars;
 
 typedef struct tir{
-	Hitbox hb;
-	int speed;
+	Hitbox hb; /* projectile's hitbox */
+	float speed; /* projectile's speed */
 	float vect_x; /* float so that we are not restricted to "square" angles */
 	float vect_y; /* same */
 }Shot;
@@ -59,7 +57,10 @@ void move_stars(Stars* stars);
 void init_stars(Stars* stars);
 
 /* Allocates a list of projectiles for the different entities
- * -----------------(how the list is)----------------------------
+ * The list works with a maximum capacity, an index and a list of capacity booleans. Everytime a new projectile is added
+ * the index goes up by 1. Whenever we remove a projectile, set it to inactive in the list of booleans and its coordinates
+ * to -1. When it's full (when index equals capacity), sort it to have all the inactives ones after the active ones
+ * and then set index to the last active one.
  * Parameters : none
  * Return : the allocated list */
 ShotList allocate_shotList();
@@ -74,5 +75,23 @@ int compare_pos(const void* a, const void* b);
  * Parameters :
  * 		ShotList* shots : pointer to the list to arrange */
 void arrange_list_projectiles(ShotList* shots);
+
+/* Moves all the projectiles for the given list of projectiles.
+ * If the list is full, arrange it by calling arrange_list_projectiles().
+ * Parameters :
+ *		ShotList* projectiles : the list of projectiles to move. */
+void move_projectiles(ShotList* projectiles);
+
+/* Adds a projectile to the given list of projectiles.
+ * Parameters :
+ *		ShotList* projectiles : the list of projectiles
+ *		int x_NW			  : north-west corner x position for the new projectile
+ *		int y_NW			  : north-west corner y position for the new projectile
+ *		int x_SE			  : south-east corner x position for the new projectile
+ *		int y_SE			  : south-east corner y position for the new projectile
+ *		float speed			  : speed of the projectile
+ *		float vect_x		  : x vector of the projectile
+ *		float vect_y 		  : y vector of the projectile */
+void add_projectile(ShotList* projectiles, int x_NW, int y_NW, int x_SE, int y_SE, float speed, float vect_x, float vect_y);
 
 #endif
