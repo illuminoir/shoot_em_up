@@ -22,13 +22,19 @@ typedef struct _game{
  *		Stars* stars 		: pointer to the stars structure */
 void draw_stars(Stars* stars);
 
+/* Displays the options 
+ * Parameters :
+ *		Game* game : the game state */
 void draw_options(Game* game);
 
+/* Displays the bonuses
+ * Parameters :
+ *		Game* game : the game state */
 void draw_bonuses(Game* game);
 
-/* Displays the entirety of the game using MLV.
+/* Displays the entirety of the game.
  * Parameters : 
- *		Game* game 			: pointer to the game state*/
+ *		Game* game : the game state*/
 void draw_game(Game* game);
 
 #endif

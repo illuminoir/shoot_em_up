@@ -15,7 +15,7 @@ void draw_projectiles_ship(Ship* ship)
 		else
 			MLV_draw_image(ship_projectile, ship->projectiles.list[i].hb.x_NW, ship->projectiles.list[i].hb.y_NW);
 	}
-	/* draw the option's projectiles) */
+	/* draw the option's projectiles */
 	if(ship->has_option){
 		for(i = 0 ; i < ship->option.projectiles.index ; i++){
 			if(!(ship->option.projectiles.active[i]))

@@ -34,6 +34,9 @@
 #define FRAMES_WAIT_BETWEEN_ANGLES 480
 #define FRAMES_WAIT_BETWEEN_SHOTS 120
 
+#define LONE_PROJECTILE_SPRITES 2
+#define SPINNING_SPRITES 4
+
 #define CANNON_POSITION WINDOW_HEIGHT - CANNON_SIZE
 #define ENEMY_POSITION WINDOW_HEIGHT / 15
 
@@ -53,6 +56,7 @@ typedef struct _enemy{
 	ShotList projectiles; /* possibly null depending on nature */
 	int shot_frames_wait; /* when the enemy just shot wait a few frames to not overload the screen */
 	int remaining_shots_angle;
+	int remaining_sprites;
 	int frames_pattern;
 	int index_pattern;
 	int drop_rate; /* is a percentage, a value of 3 meaning a 3% drop rate */
@@ -82,11 +86,19 @@ void init_pattern(Pattern* p);
  *		Enemy* e : the enemy to initialize */
 void init_enemy(Enemy* e);
 
+/* Changes the pattern for patterned enemies.
+ * Parameters :
+ *		Enemy* e : the enemy to modify. */
+void change_pattern_enemy(Enemy *e);
+
 /* Move an enemy. 
  * Parameters :
  *		Enemy* enemy : the enemy to move */
 void move_enemy(Enemy *enemy);
 
+/* Moves a bonus
+ * Parameters :
+ *		Bonus* b : the bonus to move */
 void move_bonus(Bonus* b);
 
 /* Move all the enemies active on the game
@@ -97,7 +109,8 @@ void move_all_enemies(Enemy* e, int index_enemy);
 
 /* Move all the bonuses active on the game
  * Parameters :
- *		*/
+ *		Bonus *b 		 : the list of bonuses
+ *		int index_bonuss : index of the last bonus */
 void move_all_bonuses(Bonus* b, int index_bonus);
 
 /* Actualize the frames for an enemy : the frames between shots or
@@ -116,5 +129,11 @@ void enemy_add_projectile(Enemy* enemy);
  *		Enemy* enemies  : the list of enemies.
  *		int index_enemy : the index of the last enemy. */
 void move_all_enemies_projectiles(Enemy* enemies, int index_enemy);
+
+/* Add projectile to all the enemies, if possible.
+ * Parameters :
+ *		Enemy* enemies  : the list of enemies
+ *		int index_enemy : index of the last enemy */
+void add_projectiles_to_enemies(Enemy* enemies, int index_enemy);
 
 #endif

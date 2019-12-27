@@ -53,7 +53,7 @@ void init_enemy(Enemy* e)
 	e->hb.y_SE = e->hb.y_NW + CANNON_SIZE;
 	e->current_sprite = 0;
 	e->health = 30;
-	e->drop_rate = 500;
+	e->drop_rate = 5;
 
 	switch(e->nature){
 		case CANNON : 
@@ -100,6 +100,7 @@ void change_pattern_enemy(Enemy *e)
 		}
 	}
 }
+
 /* ------------------- */
 void move_enemy(Enemy *e)
 /* ------------------- */
@@ -114,42 +115,30 @@ void move_enemy(Enemy *e)
 		e->hb.y_NW += (e->speed * e->moves[e->index_pattern].vect_y);
 		e->hb.y_SE += (e->speed * e->moves[e->index_pattern].vect_y);
 	}
+	/* if the enemy is spinning, make it move along a sinusoidal */
 	else if(e->nature == SPINNING){
 		e->hb.x_NW -= e->speed;
 		e->hb.x_SE -= e->speed;
 
-		e->hb.y_NW = sin(ticks * (PI / 180)) * WINDOW_HEIGHT / 8 + (WINDOW_HEIGHT / 5);
-		e->hb.y_SE = sin(ticks * (PI / 180)) * WINDOW_HEIGHT / 8 + (WINDOW_HEIGHT / 5) + SPINNING_SIZE;
-
-		printf("e->hb y : %f\n", e->hb.y_NW);
-
-		ticks+= 0.1;
+		e->hb.y_NW += sin(ticks * (PI / 180));
+		e->hb.y_SE += sin(ticks * (PI / 180));
 	}
 
-	/*
-	else if(e->nature == SPINNING){
-
-   double x, ret, val;
-
-   		val = PI / 180;
-  		ret = sin(ticks*val);   
-  		printf("The sine of %f is %f degrees", ticks, ret);
-		printf("sin : %f\n", sin(ticks * 0.5 * PI));
-		ticks++;
-	}*/
+	/* otherwise, it moves following a straight line */
 	else {
 		e->hb.x_NW -= e->speed;
 		e->hb.x_SE -= e->speed;
 	}
-	/* if the enemy is a lone_projectile, change it's sprite */
-	if(e->nature == LONE_PROJECTILE){
-		if(!(e->remaining_shots_angle)){
-			e->current_sprite = (e->current_sprite + 1) % 2;
-			e->remaining_shots_angle = 30;
-		}
-		else
-			e->remaining_shots_angle--;
+	/* if the enemy is a lone_projectile or spinning, change its sprite */
+	if(!(e->remaining_sprites)){
+		e->remaining_sprites = 30;
+		if(e->nature == LONE_PROJECTILE)
+			e->current_sprite = (e->current_sprite + 1) % LONE_PROJECTILE_SPRITES;
+		else if(e->nature == SPINNING)
+			e->current_sprite = (e->current_sprite + 1) % SPINNING_SPRITES;
 	}
+	else
+		e->remaining_sprites--;
 
 	/* if the enemy goes beyond the left border, teleport it back to the opposite border */
 	if(e->hb.x_SE <= 0){
@@ -189,6 +178,8 @@ void move_all_enemies(Enemy* e, int index_enemy)
 			continue;
 		move_enemy(&(e[i]));
 	}
+	
+	ticks+= 0.5;
 }
 
 /* ------------------------------------------ */
@@ -248,4 +239,15 @@ void move_all_enemies_projectiles(Enemy* enemies, int index_enemy)
 	for(i = 0 ; i < index_enemy ; i++)
 		if(enemies[i].nature == CANNON)
 			move_projectiles(&(enemies[i].projectiles));
+}
+
+/* ---------------------------------------------------------- */
+void add_projectiles_to_enemies(Enemy* enemies, int index_enemy)
+/* ---------------------------------------------------------- */
+{
+	int i;
+	
+	for(i = 0 ; i < index_enemy ; i++)
+		if(enemies[i].nature == CANNON)
+			enemy_add_projectile(&(enemies[i]));
 }

@@ -9,7 +9,7 @@
 #define ENEMY_MAX_CAPACITY 50
 #define BONUS_MAX_CAPACITY 15
 #define BILLION 1000000000
-#define WAIT_ENEMY_SPAWN 100
+#define WAIT_ENEMY_SPAWN 500
 
 /* Initializes the game state at the beginning
  * Parameters :

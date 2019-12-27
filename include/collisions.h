@@ -27,7 +27,7 @@ void collision_ship_enemy_projectile(Ship* ship, ShotList* projectiles, int inde
 void collision_ship_enemy(Ship* ship, Enemy* enemy);
 
 /* Actions for when a projecile from the ship collides with an enemy :
- * Delete the projectile, remove the enemy's health and the enemy if it dies.
+ * Delete the projectile, decrease the enemy's health and the enemy if it dies.
  * Parameters :
  *		ShotList* projectiles : list of the ship's projectiles
  *		int index_proj 		  :	index of the projectile colliding
@@ -35,10 +35,20 @@ void collision_ship_enemy(Ship* ship, Enemy* enemy);
  * Return : 1 if an enemy died to generate a bonus, 0 otherwise */
 int collision_ship_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy);
 
+/* Actions for when there is collision between the ship and a bonus :
+ * Delete the bonus and increase the bonus count by 1.
+ * Parameters :
+ *		int* current_bonus : the current bonus count
+ *		Bonus* bonuses 	   : the list of bonuses
+ *		int index_bonus    : the index of the bonus in collision */
 void collision_ship_bonus(int* current_bonus, Bonus* bonuses, int index_bonus);
 
+/* Actions for when there is collision between a projectile of the option and an enemy :
+ * Delete the projectile and decrease the enemy health and the enemy if it dies.
+ * Parameters :
+ *		Ship* ship 	   : the ship to get the option
+ *		int index_proj : index of the projectile
+ *		Enemy* enemy   : the enemy in collision */
 int collision_option_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy);
-
-void get_smaller_hitboxes(Hitbox hb1, Hitbox* smaller_hb1, int size_unit_hb1, Hitbox hb2, Hitbox* smaller_hb2, int size_unit_hb2);
 
 #endif

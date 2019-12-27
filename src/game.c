@@ -256,7 +256,6 @@ void main_loop(Game* game)
 	struct timespec new, last;
 	double accum;
 	int move_x, move_y;
-	int i;
 
 	MLV_init_audio();
 
@@ -282,11 +281,11 @@ void main_loop(Game* game)
 		if(get_ship_event(&(game->player), &move_x, &move_y, &(game->current_bonus)))
 			break;
 
+		/* generates an enemy if possible */
 		generate_enemy(game);
 
-		for(i = 0 ; i < game->index_enemy ; i++)
-			if(game->enemies[i].nature == CANNON)
-				enemy_add_projectile(&(game->enemies[i]));
+		/* add projectiles to enemies */
+		add_projectiles_to_enemies(game->enemies, game->index_enemy)
 
 		/* Moves of the entities on the board */
 		move_all_entities(game, move_x, move_y);
