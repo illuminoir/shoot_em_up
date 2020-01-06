@@ -79,3 +79,18 @@ void draw_game(Game* game)
 
 	MLV_actualise_window();
 }
+
+
+/* ---------------- */
+void draw_end_screen()
+/* ---------------- */
+{
+	MLV_Image* end_screen = MLV_load_image("img/end_screen.png");
+
+	MLV_clear_window(MLV_COLOR_BLACK);
+
+	MLV_draw_image(end_screen, WINDOW_WIDTH / 2 - (MLV_get_image_width(end_screen) / 2), WINDOW_HEIGHT / 2 - (MLV_get_image_height(end_screen) / 2));
+
+	MLV_actualise_window();
+
+}

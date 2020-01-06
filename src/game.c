@@ -216,12 +216,15 @@ void check_all_collisions(Game* game)
 			/* check for collision between the enemy and the ship's projectiles */
 			if(collision_hitboxes(game->player.projectiles.list[k].hb, game->enemies[i].hb)){
 				if(collision_ship_projectile_enemy(&(game->player), k, &(game->enemies[i]))){
-					MLV_play_sound(enemy_death, 1.0);
+					MLV_play_sound(enemy_death, 1.0);/*
+					MLV_draw_image(enemy_death_particle, game->enemies[i].hb.x_NW + (CANNON_SIZE / 2) - (MLV_get_image_height(enemy_death_particle) / 2),
+						game->enemies[i].hb.y_NW + (CANNON_SIZE / 2) - (MLV_get_image_height(enemy_death_particle) / 2));*/
 					generate_bonus(game, &(game->enemies[i]));
 					break;
 				}
 				else
 					MLV_play_sound(enemy_hit, 1.0);
+				/* ajouter son de hit a tous les autres collisions et ajouteer les draw image a collisions (si mort ou  hit) */
 			}
 		}
 		/* if the player has the option upgrade */
@@ -237,6 +240,8 @@ void check_all_collisions(Game* game)
 						generate_bonus(game, &(game->enemies[i]));
 						break;
 					}
+					else
+						MLV_play_sound(enemy_hit, 1.0);
 				}
 			}
 		}
@@ -253,6 +258,8 @@ void check_all_collisions(Game* game)
 						generate_bonus(game, &(game->enemies[i]));
 						break;
 					}
+					else
+						MLV_play_sound(enemy_hit, 1.0);
 				}
 			}
 		}
@@ -299,11 +306,7 @@ void main_loop(Game* game)
 	double accum;
 	int move_x, move_y;
 
-	MLV_init_audio();
-
-	load_all_data();
-
-	MLV_play_music(music, 0.3, -1);
+	MLV_play_music(music, 0.2, -1);
 
 	/* Main loop over the frames... */
 	while(game->player.health){
@@ -346,7 +349,4 @@ void main_loop(Game* game)
 	}
 
 	MLV_stop_music();
-	MLV_free_audio();
-
-	free_everything();
 }

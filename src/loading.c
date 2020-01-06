@@ -2,6 +2,7 @@
 
 /* sounds */
 MLV_Music* music;
+MLV_Music* game_over;
 MLV_Sound* enemy_hit; 
 MLV_Sound* enemy_death;
 MLV_Sound* ship_shoot_sound;
@@ -66,6 +67,7 @@ void load_sounds()
 {
 	ship_shoot_sound = MLV_load_sound("audio/shooting_sound.ogg");
 	music = MLV_load_music("audio/music.mp3");
+	game_over = MLV_load_music("audio/game_over.mp3");
 	enemy_hit = MLV_load_sound("audio/enemy_hit_sound.ogg");
 	enemy_death = MLV_load_sound("audio/enemy_death_sound.ogg");
 }
@@ -206,8 +208,8 @@ void resize_sprites_ship_option()
 void load_bonuses()
 /* ------------- */
 {
-	bonus1 = MLV_load_image("img/item_loot_1_1.png");
-	bonus2 = MLV_load_image("img/item_loot_1_2.png");
+	bonus1 = MLV_load_image("img/bonuses/item_loot_1_1.png");
+	bonus2 = MLV_load_image("img/bonuses/item_loot_1_2.png");
 }
 
 /* --------------- */

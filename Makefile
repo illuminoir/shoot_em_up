@@ -38,7 +38,7 @@ bin/game.o: src/game.c include/game.h include/display_game.h include/collisions.
 	$(CC) -o $@ $< $(CFLAGS) -c -lMLV -D_POSIX_C_SOURCE=199309L
 
 bin/main.o: src/main.c include/game.h
-	$(CC) -o $@ $< $(CFLAGS) -c
+	$(CC) -o $@ $< $(CFLAGS) -c -lMLV
 
 
 

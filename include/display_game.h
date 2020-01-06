@@ -39,4 +39,7 @@ void draw_bonuses(Game* game);
  *		Game* game : the game state*/
 void draw_game(Game* game);
 
+/* Displays the end screen */
+void draw_end_screen();
+
 #endif

@@ -4,6 +4,7 @@
 #include <MLV/MLV_all.h>
 
 extern MLV_Music* music;
+extern MLV_Music* game_over;
 extern MLV_Sound* enemy_hit; 
 extern MLV_Sound* enemy_death;
 extern MLV_Sound* ship_shoot_sound;
