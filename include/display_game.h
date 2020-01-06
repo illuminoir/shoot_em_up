@@ -7,19 +7,21 @@
 
 /* describes the game state */
 typedef struct _game{
-	Ship player;
-	Stars stars;
+	Ship player; /* the player's ship */
+	Stars stars; /* the stars for the background */
 	Enemy* enemies; /* dynamic list */
-	Bonus* bonuses;
-	int index_enemy;
-	int index_bonus;
-	int wait_enemy_spawn;
-	int current_bonus;
+	Bonus* bonuses; /* the list of bonuses */
+	int index_enemy; /* index of the last active enemy */
+	int index_bonus; /* index of the last active bonus */
+	int current_enemy; /* type of the last enemy spawn (for the spawning patterns) */
+	int remaining_spawns; /* how many spawns of the same enemy are remaining */
+	int wait_enemy_spawn; /* time to wait (in frames) between every enemy generation */
+	int current_bonus; /* index of the current bonus */
 }Game;
 
 /* Displays the stars
  * Parameters :
- *		Stars* stars 		: pointer to the stars structure */
+ *		Stars* stars : pointer to the stars structure */
 void draw_stars(Stars* stars);
 
 /* Displays the options 

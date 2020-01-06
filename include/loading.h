@@ -14,6 +14,7 @@ extern MLV_Image* ship_moving_down;
 
 extern MLV_Image* ship_projectile;
 extern MLV_Image* ship_laser;
+extern MLV_Image* ship_missile;
 
 extern MLV_Image* ship_option_1;
 extern MLV_Image* ship_option_2;
@@ -62,6 +63,7 @@ extern MLV_Image* bonus2;
 #define BONUS_SIZE 40
 
 #define SHOT_FRAMES_WAIT 60
+#define MISSILES_FRAMES_WAIT 90
 
 #define IMG_OPT_SIZE_X WINDOW_WIDTH / 12 - 5
 #define IMG_OPT_SIZE_Y WINDOW_HEIGHT / 20 

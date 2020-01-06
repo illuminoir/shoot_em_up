@@ -38,7 +38,7 @@
 #define SPINNING_SPRITES 4
 
 #define CANNON_POSITION WINDOW_HEIGHT - CANNON_SIZE
-#define ENEMY_POSITION WINDOW_HEIGHT / 15
+#define ENEMY_POSITION WINDOW_HEIGHT / 20
 
 typedef struct _Pattern{
 	int vect_x;
@@ -47,7 +47,7 @@ typedef struct _Pattern{
 }Pattern;
 
 typedef struct _enemy{
-	Hitbox hb;
+	Hitbox hb; /* enemy's hitbox */
 	int health; /* enemy's health */
 	int nature; /* the type of enemy that gives the pattern */
 	float speed; /* depends on nature as well */
@@ -55,10 +55,10 @@ typedef struct _enemy{
 	int current_sprite; /* the current sprite for display */
 	ShotList projectiles; /* possibly null depending on nature */
 	int shot_frames_wait; /* when the enemy just shot wait a few frames to not overload the screen */
-	int remaining_shots_angle;
-	int remaining_sprites;
-	int frames_pattern;
-	int index_pattern;
+	int remaining_shots_angle; /* for cannon enemies a count of shots to do for each angle */
+	int remaining_frames_sprite; /* the remaining frames for this current sprite */
+	int frames_pattern; /* frames for a pattern */
+	int index_pattern; /* index of the current pattern */
 	int drop_rate; /* is a percentage, a value of 3 meaning a 3% drop rate */
 }Enemy;
 

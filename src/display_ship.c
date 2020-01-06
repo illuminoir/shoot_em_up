@@ -8,10 +8,13 @@ void draw_projectiles_ship(Ship* ship)
 
 	/* draw every projectile if they're active */
 	for(i = 0 ; i < ship->projectiles.index ; i++){
+			/* if the projectile isn't active */
 		if(!(ship->projectiles.active[i]))
 			continue;
+		/* if the laser upgrade is acquired */
 		if(ship->has_laser)
 			MLV_draw_image(ship_laser, ship->projectiles.list[i].hb.x_NW, ship->projectiles.list[i].hb.y_NW);
+		/* otherwise draw the normal projectiles */
 		else
 			MLV_draw_image(ship_projectile, ship->projectiles.list[i].hb.x_NW, ship->projectiles.list[i].hb.y_NW);
 	}
@@ -28,10 +31,27 @@ void draw_projectiles_ship(Ship* ship)
 	}
 }
 
+/* ----------------------------- */
+void draw_missiles_ship(Ship* ship)
+/* ----------------------------- */
+{
+	int i;
+
+	for(i = 0 ; i < ship->missiles.index ; i++){
+		/* if the missile is inactive */
+		if(!(ship->missiles.active[i]))
+			continue;
+		MLV_draw_image(ship_missile, ship->missiles.list[i].hb.x_NW, ship->missiles.list[i].hb.y_NW);
+	}
+}
+
 /* -------------------- */
 void draw_ship(Ship* ship)
 /* -------------------- */
 {
+	/* if the ship is alternating states of blinking (has been hit) */
+	if(ship->blink_state == OFF)
+		return;
 	/* draw the ship with the correct sprite */
 	switch(ship->current_sprite){
 		case IDLE : MLV_draw_image(ship_idle, ship->hb.x_NW, ship->hb.y_NW); break;

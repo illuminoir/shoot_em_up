@@ -51,8 +51,10 @@ void draw_bonuses(Game* game)
 	int i;
 
 	for(i = 0 ; i < game->index_bonus ; i++){
+		/* if the bonus isn't active */
 		if(game->bonuses[i].hb.x_NW == -1)
 			continue;
+		/* draw the corresponding sprite */
 		if(game->bonuses[i].current_sprite == BONUS_FIRST_SPRITE)
 			MLV_draw_image(bonus1, (int)game->bonuses[i].hb.x_NW, (int)game->bonuses[i].hb.y_NW);
 		else
@@ -70,6 +72,7 @@ void draw_game(Game* game)
 	draw_enemies(game->enemies, game->index_enemy);
 	draw_ship(&(game->player));
 	draw_projectiles_ship(&(game->player));
+	draw_missiles_ship(&(game->player));
 	draw_bonuses(game);
 	draw_options(game);
 

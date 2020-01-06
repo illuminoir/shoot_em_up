@@ -9,7 +9,14 @@
 #define ENEMY_MAX_CAPACITY 50
 #define BONUS_MAX_CAPACITY 15
 #define BILLION 1000000000
-#define WAIT_ENEMY_SPAWN 500
+#define WAIT_ENEMY_SPAWN 600
+
+#define CANNON_SPAWNS 1
+#define LONE_SPAWNS 4
+#define PATTERNED_SPAWNS 2
+#define SPINNING_SPAWNS 3
+
+#define WAIT_MULTIPLE_SPAWNS 100
 
 /* Initializes the game state at the beginning
  * Parameters :
@@ -36,6 +43,11 @@ void arrange_list_enemies(Enemy* enemies, int* index_enemy);
  * 		Bonus* bonuses   : pointer to the list to arrange
  *		int* index_bonus : index to the last active bonus */
 void arrange_list_bonuses(Bonus* bonuses, int* index_bonus);
+
+/* Sets the amount of spawns remaining when generating a new type of enemy.
+ * Parameters : 
+ *		Game* game : pointer to the game state */
+void get_remaining_spawns(Game* game);
 
 /* Generates a new enemy.
  * Parameters :

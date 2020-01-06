@@ -21,7 +21,7 @@ void collision_ship_enemy_projectile(Ship* ship, ShotList* projectiles, int inde
 {
 	/* the ship is hit, loses health and is invulnerable for some time */
 	ship->health -= 10;
-	ship->invulnerability_frames = 120;
+	ship->invulnerability_frames = INVULNERABILITY_FRAMES;
 
 	/* enemy projectile hit the ship, remove it */
 	projectiles->list[index_proj].hb.x_NW = -1;
@@ -35,7 +35,7 @@ void collision_ship_enemy(Ship* ship, Enemy* enemy)
 {
 	/* the ship is hit, loses health and is invulnerable for some time */
 	ship->health -= 10;
-	ship->invulnerability_frames = 120;	
+	ship->invulnerability_frames = INVULNERABILITY_FRAMES;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -53,7 +53,7 @@ int collision_ship_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy)
 	enemy->health -= 10;
 
 	/* if the enemy dies, try to generate a bonus then remove it */
-	if(enemy->health < 0)
+	if(enemy->health <= 0)
 		return 1;
 
 	return 0;
@@ -87,7 +87,26 @@ int collision_option_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy)
 	enemy->health -= 10;
 
 	/* if the enemy dies, try to generate a bonus then remove it */
-	if(enemy->health < 0)
+	if(enemy->health <= 0)
+		return 1;
+
+	return 0;
+}
+
+/* ------------------------------------------------------------------ */
+int collision_missile_enemy(Ship* ship, int index_missile, Enemy* enemy)
+/* ------------------------------------------------------------------ */
+{
+	/* remove the missile */
+	ship->missiles.list[index_missile].hb.x_NW = -1;
+	ship->missiles.list[index_missile].hb.y_NW = -1;
+	ship->missiles.active[index_missile] = 0;
+
+	/* enemy loses health */
+	enemy->health -= 10;
+
+	/* if the enemy dies, try to generate a bonus then remove it */
+	if(enemy->health <= 0)
 		return 1;
 
 	return 0;

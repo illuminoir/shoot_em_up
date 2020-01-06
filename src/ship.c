@@ -12,7 +12,7 @@ void init_ship(Ship* ship)
 	ship->hb.x_SE = ship->hb.x_NW + SHIP_SIZE;
 	ship->hb.y_SE = ship->hb.y_NW + SHIP_SIZE;
 
-	ship->health = 100000;
+	ship->health = 100;
 	ship->current_sprite = IDLE;
 	ship->speed = 0.5; /* added to the ship's position to make it move */
 
@@ -23,10 +23,14 @@ void init_ship(Ship* ship)
 	ship->has_laser = 0;
 	ship->has_option = 0;
 	ship->invulnerability_frames = 0;
+	ship->blink_frames = BLINK_FRAMES;
+	ship->blink_state = ON;
 	ship->shot_frames_wait = 0;
+	ship->missiles_frames_wait = 0;
 
-	/* allocate the list of projectiles */
+	/* allocate the lists of projectiles */
 	ship->projectiles = allocate_shotList();
+	ship->missiles = allocate_shotList();
 
 	/* set the option to disabled */
 	ship->option.x = -1;
@@ -42,7 +46,7 @@ void change_ship_y_axis(Ship* ship, int move_y)
 {
 	/* if has option upgrade, give it a default Y position */
 	if(ship->has_option)
-		ship->option.y = ship->hb.y_SE + (SHIP_SIZE / 2);
+		ship->option.y = ship->hb.y_SE + (SHIP_SIZE / 8);
 
 	/* get the sprite depending on the ship's y move and move the option accordingly */
 	switch(move_y){
@@ -57,7 +61,7 @@ void change_ship_y_axis(Ship* ship, int move_y)
 		case -1 : 
 			ship->current_sprite = MOVING_DOWN;
 		 	if(ship->has_option) 
-		 		ship->option.y = ship->hb.y_SE + (SHIP_SIZE / 2);
+		 		ship->option.y = ship->hb.y_SE + (SHIP_SIZE / 8);
 		 	break;
 		default: break;
 	}
@@ -129,7 +133,7 @@ void add_projectile_ship(Ship* ship, int x_proj, int y_proj, int speed, int vect
 		ship->projectiles.list[ship->projectiles.index - 1].hb.y_SE -= SHIP_SIZE / 5;
 
 		/* add the second projectile */
-		add_projectile(&(ship->projectiles), x_proj, y_proj + (SHIP_SIZE / 8),x_proj + PROJECTILE_SIZE,
+		add_projectile(&(ship->projectiles), x_proj, y_proj + (SHIP_SIZE / 8), x_proj + PROJECTILE_SIZE,
 			y_proj + (SHIP_SIZE / 8) + PROJECTILE_SIZE, speed, vect_x, vect_y);
 	}
 
@@ -153,6 +157,9 @@ void move_ship_projectiles(Ship* ship)
 
 	if(ship->has_option)
 		move_projectiles(&(ship->option.projectiles));
+
+	if(ship->has_missile)
+		move_projectiles(&(ship->missiles));
 }
 
 /* -------------------------------- */
@@ -164,6 +171,22 @@ void actualize_frames_ship(Ship* ship)
 
 	if(ship->shot_frames_wait)
 		ship->shot_frames_wait--;
+
+	if(ship->missiles_frames_wait)
+		ship->missiles_frames_wait--;
+
+	/* make the blinking pattern if the ship is invulnerable */
+	if(ship->invulnerability_frames){
+		if(ship->blink_frames)
+			ship->blink_frames--;
+		/* get the next blink (show the ship if ON, don't if OFF) */
+		if(!(ship->blink_frames)){
+			ship->blink_frames = BLINK_FRAMES;
+			ship->blink_state = (ship->blink_state + 1) % 2;
+		}
+	}
+	else
+		ship->blink_state = ON;
 }
 
 
@@ -183,4 +206,17 @@ void consume_bonus(int* current_bonus, Ship* ship)
 
 	/* reset the bonus count */
 	*current_bonus = 0;
+}
+
+void add_missile_to_ship(Ship* ship){
+	/* if the ship cannot shoot yet */
+	if(ship->missiles_frames_wait > 0)
+		return;
+
+	/* else, add a projectile */
+	add_projectile(&(ship->missiles), ship->hb.x_SE - (PROJECTILE_SIZE / 2) - (SHIP_SIZE / 4), ship->hb.y_SE - (SHIP_SIZE / 4),
+		ship->hb.x_SE + (PROJECTILE_SIZE / 2) - (SHIP_SIZE / 4), ship->hb.y_SE - (SHIP_SIZE / 4) + PROJECTILE_SIZE, 0.5, 0.2, 3);
+
+	/* if it can shoot, it has to wait to shoot again */
+	ship->missiles_frames_wait = MISSILES_FRAMES_WAIT;
 }

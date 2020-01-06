@@ -27,7 +27,7 @@ void collision_ship_enemy_projectile(Ship* ship, ShotList* projectiles, int inde
 void collision_ship_enemy(Ship* ship, Enemy* enemy);
 
 /* Actions for when a projecile from the ship collides with an enemy :
- * Delete the projectile, decrease the enemy's health and the enemy if it dies.
+ * Delete the projectile, decrease the enemy's health and remove the enemy if it dies.
  * Parameters :
  *		ShotList* projectiles : list of the ship's projectiles
  *		int index_proj 		  :	index of the projectile colliding
@@ -44,11 +44,19 @@ int collision_ship_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy);
 void collision_ship_bonus(int* current_bonus, Bonus* bonuses, int index_bonus);
 
 /* Actions for when there is collision between a projectile of the option and an enemy :
- * Delete the projectile and decrease the enemy health and the enemy if it dies.
+ * Delete the projectile and decrease the enemy health and remove the enemy if it dies.
  * Parameters :
  *		Ship* ship 	   : the ship to get the option
  *		int index_proj : index of the projectile
  *		Enemy* enemy   : the enemy in collision */
 int collision_option_projectile_enemy(Ship* ship, int index_proj, Enemy* enemy);
+
+/* Actions for when there is collision between a missile and an enemy :
+ * Delete the missile and decrease the enemy health and remove the enemy if it dies.
+ * Parameters :
+ *		Ship* ship 	   : the ship to get the option
+ *		int index_proj : index of the projectile
+ *		Enemy* enemy   : the enemy in collision */
+int collision_missile_enemy(Ship* ship, int index_missile, Enemy* enemy);
 
 #endif

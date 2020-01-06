@@ -1,5 +1,6 @@
 #include "../include/enemy.h"
 
+/* global variable to make the sinusoidal movement */
 float ticks;
 
 /* --------------------------------- */
@@ -49,7 +50,7 @@ void init_enemy(Enemy* e)
 	/* initialize the data common to every type of enemy */
 	e->hb.x_NW = WINDOW_WIDTH; 
 	e->hb.x_SE = WINDOW_WIDTH;
-	e->hb.y_NW = rand() % CANNON_POSITION + ENEMY_POSITION; 
+	e->hb.y_NW = rand() % (CANNON_POSITION - ENEMY_POSITION) + ENEMY_POSITION; 
 	e->hb.y_SE = e->hb.y_NW + CANNON_SIZE;
 	e->current_sprite = 0;
 	e->health = 30;
@@ -62,7 +63,7 @@ void init_enemy(Enemy* e)
 			e->hb.x_NW -= CANNON_SIZE;
 			e->hb.y_NW = CANNON_POSITION;
 			e->hb.y_SE = CANNON_POSITION + CANNON_SIZE;
-			e->speed = 0.8;
+			e->speed = 0.4;
 			e->projectiles = allocate_shotList();
 			e->shot_frames_wait = 0;
 			e->remaining_shots_angle = 4;
@@ -130,15 +131,15 @@ void move_enemy(Enemy *e)
 		e->hb.x_SE -= e->speed;
 	}
 	/* if the enemy is a lone_projectile or spinning, change its sprite */
-	if(!(e->remaining_sprites)){
-		e->remaining_sprites = 30;
+	if(!(e->remaining_frames_sprite)){
+		e->remaining_frames_sprite = 30;
 		if(e->nature == LONE_PROJECTILE)
 			e->current_sprite = (e->current_sprite + 1) % LONE_PROJECTILE_SPRITES;
 		else if(e->nature == SPINNING)
 			e->current_sprite = (e->current_sprite + 1) % SPINNING_SPRITES;
 	}
 	else
-		e->remaining_sprites--;
+		e->remaining_frames_sprite--;
 
 	/* if the enemy goes beyond the left border, teleport it back to the opposite border */
 	if(e->hb.x_SE <= 0){
@@ -154,11 +155,13 @@ void move_bonus(Bonus* b)
 		b->hb.x_NW -= b->speed;
 		b->hb.x_SE -= b->speed;
 
+		/* if the bonus goes past the left border, remove it */
 		if(b->hb.x_NW < 0){
 			b->hb.x_NW = -1;
 			b->hb.y_NW = -1;
 		}
 
+		/* get the next sprite */
 		if(!(b->frames_to_next_sprite)){
 			b->current_sprite = (b->current_sprite + 1) % 2;
 			b->frames_to_next_sprite = 30;
@@ -174,6 +177,7 @@ void move_all_enemies(Enemy* e, int index_enemy)
 	int i;
 
 	for(i = 0 ; i < index_enemy ; i++){
+		/* if the enemy isn't active */
 		if(e[i].hb.x_NW == -1)
 			continue;
 		move_enemy(&(e[i]));
@@ -189,40 +193,44 @@ void move_all_bonuses(Bonus* b, int index_bonus)
 	int i;
 
 	for(i = 0 ; i < index_bonus ; i++){
+		/* if the bonus isn't active */
 		if(b[i].hb.x_NW == -1)
 			continue;
 		move_bonus(&(b[i]));
 	}
 }
 
-/* -------------------------------- */
+/* ----------------------------------- */
 void actualize_frames_enemy(Enemy* enemy)
-/* -------------------------------- */
+/* ----------------------------------- */
 {
 	if(enemy->shot_frames_wait)
 		enemy->shot_frames_wait--;
 }
 
-/* -------------------------------- */
+/* --------------------------------- */
 void enemy_add_projectile(Enemy* enemy)
-/* -------------------------------- */
+/* --------------------------------- */
 {
 	/* if the enemy cannot shoot yet */
 	if(enemy->shot_frames_wait)
 		return;
 
+	/* the next shot will be after this many frames */
 	enemy->shot_frames_wait = FRAMES_WAIT_BETWEEN_SHOTS;
 
+	/* add a projectile on the right angle depending on the sprite */
 	if(enemy->current_sprite == CANNON_ANGLE_1)
 		add_projectile(&(enemy->projectiles), enemy->hb.x_NW - 5 - PROJECTILE_SIZE, enemy->hb.y_NW - 5 - PROJECTILE_SIZE,
-			enemy->hb.x_NW - 5, enemy->hb.y_NW - 5, 0.5, -3, -1);
+			enemy->hb.x_NW - 5, enemy->hb.y_NW - 5, 0.3, -3, -2);
 
 	if(enemy->current_sprite == CANNON_ANGLE_2)
-		add_projectile(&(enemy->projectiles), enemy->hb.x_NW - 5 - PROJECTILE_SIZE, enemy->hb.y_NW - 5 - PROJECTILE_SIZE,
-			enemy->hb.x_NW - 5, enemy->hb.y_NW - 5, 0.5, -2, -3);
+		add_projectile(&(enemy->projectiles), enemy->hb.x_NW + 20 - PROJECTILE_SIZE, enemy->hb.y_NW - 5 - PROJECTILE_SIZE,
+			enemy->hb.x_NW - 5, enemy->hb.y_NW - 5, 0.2, -2.8, -3);
 
 	enemy->remaining_shots_angle--;
 
+	/* if the enemy has done all the shots for a given angle, advance to the next one */
 	if(!(enemy->remaining_shots_angle)){
 		enemy->current_sprite = (enemy->current_sprite + 1) % 3;
 		enemy->remaining_shots_angle = SHOTS_FOR_ANGLE;

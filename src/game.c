@@ -10,6 +10,8 @@ void init_game(Game* game)
 	game->bonuses = (Bonus *)calloc(sizeof(Bonus), BONUS_MAX_CAPACITY);
 	game->index_enemy = 0;
 	game->index_bonus = 0;
+	game->current_enemy = 0;
+	game->remaining_spawns = 0;
 	game->wait_enemy_spawn = 0;
 	game->current_bonus = 0;
 
@@ -72,6 +74,19 @@ void arrange_list_bonuses(Bonus* bonuses, int* index_bonus)
 	*index_bonus = i;
 }
 
+/* ------------------------------- */
+void get_remaining_spawns(Game* game)
+/* ------------------------------- */
+{
+	switch(game->current_enemy){
+		case CANNON : game->remaining_spawns = CANNON_SPAWNS; break;
+		case LONE_PROJECTILE : game->remaining_spawns = LONE_SPAWNS; break;
+		case PATTERNED : game->remaining_spawns = PATTERNED_SPAWNS; break;
+		case SPINNING : game->remaining_spawns = SPINNING_SPAWNS; break;
+		default: break;
+	}
+}
+
 /* ------------------------- */
 void generate_enemy(Game* game)
 /* ------------------------- */
@@ -89,8 +104,14 @@ void generate_enemy(Game* game)
 	if(game->index_enemy == ENEMY_MAX_CAPACITY)
 		return;
 
-	/* set a random nature for the new generated enemy */
-	game->enemies[game->index_enemy].nature = rand() % 4;
+	if(!(game->remaining_spawns)){
+		game->current_enemy = rand() % 4;
+		get_remaining_spawns(game);
+	}
+
+	game->remaining_spawns--;
+
+	game->enemies[game->index_enemy].nature = game->current_enemy;
 
 	/* initialize the new enemy */
 	init_enemy(&(game->enemies[game->index_enemy]));
@@ -98,8 +119,10 @@ void generate_enemy(Game* game)
 	/* increase the index */
 	game->index_enemy++;
 
-	/* set the wait time until new enemy generation */
-	game->wait_enemy_spawn = WAIT_ENEMY_SPAWN;
+	if(!(game->remaining_spawns))
+		game->wait_enemy_spawn = WAIT_ENEMY_SPAWN;
+	else
+		game->wait_enemy_spawn = WAIT_MULTIPLE_SPAWNS;
 }
 
 /* ---------------------------------------- */
@@ -151,6 +174,9 @@ int get_ship_event(Ship* ship, int* x, int* y, int* current_bonus)
 
 		if(MLV_get_keyboard_state(MLV_KEYBOARD_LCTRL) == MLV_PRESSED)
 			consume_bonus(current_bonus, ship);
+
+		if(ship->has_missile)
+			add_missile_to_ship(ship);
 
 		return 0;
 }
@@ -207,6 +233,22 @@ void check_all_collisions(Game* game)
 				/* check for collision between the option's projectile and the enemy */
 				if(collision_hitboxes(game->player.option.projectiles.list[m].hb, game->enemies[i].hb)){
 					if(collision_option_projectile_enemy(&(game->player), m, &(game->enemies[i]))){
+						MLV_play_sound(enemy_death, 1.0);
+						generate_bonus(game, &(game->enemies[i]));
+						break;
+					}
+				}
+			}
+		}
+		/* if the player has the missile upgrade */
+		if(game->player.has_missile){
+			for(m = 0 ; m < game->player.missiles.index ; m++){
+				/* if the projectile is inactive or the enemy already died */
+				if(!(game->player.missiles.active[m]))
+					continue;
+				/* check for collision between the missile and the enemy */
+				if(collision_hitboxes(game->player.missiles.list[m].hb, game->enemies[i].hb)){
+					if(collision_missile_enemy(&(game->player), m, &(game->enemies[i]))){
 						MLV_play_sound(enemy_death, 1.0);
 						generate_bonus(game, &(game->enemies[i]));
 						break;
@@ -285,7 +327,7 @@ void main_loop(Game* game)
 		generate_enemy(game);
 
 		/* add projectiles to enemies */
-		add_projectiles_to_enemies(game->enemies, game->index_enemy)
+		add_projectiles_to_enemies(game->enemies, game->index_enemy);
 
 		/* Moves of the entities on the board */
 		move_all_entities(game, move_x, move_y);

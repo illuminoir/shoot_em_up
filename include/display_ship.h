@@ -11,6 +11,11 @@
  *		Ship* ship : pointer to the ship to draw its projectiles */
 void draw_projectiles_ship(Ship* ship);
 
+/* Draws the ship's missiles
+ * Parameters :
+ *		Ship* ship : pointer to the ship to draw its missiles */
+void draw_missiles_ship(Ship* ship);
+
 /* Function that draws the ship at its coordinates. 
  * Parameters :
  *		Ship* ship 		: pointer to the ship to get its coordinates.*/

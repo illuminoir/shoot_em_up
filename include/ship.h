@@ -18,6 +18,12 @@
 #define OPTION_SPRITE_1 0
 #define OPTION_SPRITE_2 1
 
+#define ON 1
+#define OFF 0
+
+#define INVULNERABILITY_FRAMES 300
+#define BLINK_FRAMES 60
+
 /* Option object that shoots along with the ship */
 typedef struct _option{
 	int x; /* x position for the object */
@@ -38,8 +44,12 @@ typedef struct _ship {
 	int has_laser; /* laser upgrade */
 	int has_option; /* option upgrade */
 	int invulnerability_frames; /* when hit become invulnerable for some time */
+	int blink_frames; /* remaining frames to alternate between blink states when hit */
+	int blink_state; /* the current blink state (boolean on/off) */
 	int shot_frames_wait; /* when the ship just shot wait a few frames to not overload the screen */
+	int missiles_frames_wait; /* time to wait between the spawning of two missiles */
 	ShotList projectiles; /* the ship's projectile */
+	ShotList missiles; /* the missiles when the upgrade is acquired */
 	Option option; /* option object for when the upgrade is acquired */
 }Ship;
 
@@ -87,7 +97,12 @@ void actualize_frames_ship(Ship* ship);
 /* Consume the bonus and add the upgrade depending on how much was consumed.
  * Parameters :
  *		int* current_bonus : the current bonus that will be reset after consumption.
- *		Ship* ship 		   : pointer on the ship */
+ *		Ship* ship 		   : pointer to the ship object */
 void consume_bonus(int* current_bonus, Ship* ship);
+
+/* Adds a new missile to the ship's list of missiles
+ * Parameters :
+ *		Ship* ship : pointer to the ship object */
+void add_missile_to_ship(Ship* ship);
 
 #endif

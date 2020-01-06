@@ -14,6 +14,7 @@ MLV_Image* ship_moving_down;
 /* sprites for the projectiles for the ship */
 MLV_Image* ship_projectile;
 MLV_Image* ship_laser;
+MLV_Image* ship_missile;
 
 /* sprites for the ship's option */
 MLV_Image* ship_option_1;
@@ -169,6 +170,7 @@ void load_sprites_ship()
 
 	ship_projectile = MLV_load_image("img/ship/projectile_ship.png");
 	ship_laser = MLV_load_image("img/ship/laser_ship.png");
+	ship_missile = MLV_load_image("img/ship/missile_ship_falling.png");
 }
 
 /* -------------------- */
@@ -181,6 +183,7 @@ void resize_sprites_ship()
 
 	MLV_resize_image_with_proportions(ship_projectile, PROJECTILE_SIZE, PROJECTILE_SIZE);
 	MLV_resize_image_with_proportions(ship_laser, PROJECTILE_SIZE, PROJECTILE_SIZE);
+	MLV_resize_image_with_proportions(ship_missile, PROJECTILE_SIZE, PROJECTILE_SIZE);
 }
 
 /* ------------------------- */
@@ -243,6 +246,7 @@ void free_everything()
 	MLV_free_image(ship_moving_down);
 	MLV_free_image(ship_projectile);
 	MLV_free_image(ship_laser);
+	MLV_free_image(ship_missile);
 	MLV_free_image(ship_option_1);
 	MLV_free_image(ship_option_2);
 	MLV_free_image(patterned_sprite_idle);
