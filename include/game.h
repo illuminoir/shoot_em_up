@@ -16,7 +16,7 @@
 #define PATTERNED_SPAWNS 2
 #define SPINNING_SPAWNS 3
 
-#define WAIT_MULTIPLE_SPAWNS 100
+#define WAIT_MULTIPLE_SPAWNS 30
 
 /* Initializes the game state at the beginning
  * Parameters :

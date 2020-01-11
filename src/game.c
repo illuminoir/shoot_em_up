@@ -116,6 +116,14 @@ void generate_enemy(Game* game)
 	/* initialize the new enemy */
 	init_enemy(&(game->enemies[game->index_enemy]));
 
+	/* if we spawn many lone projectiles, spawn them all on the same height */
+	if(game->current_enemy == LONE_PROJECTILE){
+		if(game->enemies[game->index_enemy - 1].nature == LONE_PROJECTILE){
+			game->enemies[game->index_enemy].hb.y_NW = game->enemies[game->index_enemy - 1].hb.y_NW;
+			game->enemies[game->index_enemy].hb.y_SE = game->enemies[game->index_enemy - 1].hb.y_SE;
+		}
+	}
+
 	/* increase the index */
 	game->index_enemy++;
 

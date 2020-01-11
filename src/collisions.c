@@ -4,6 +4,7 @@
 int collision_hitboxes(Hitbox h1, Hitbox h2)
 /* -------------------------------------- */
 {
+	
 	if(((h1.x_NW <= h2.x_NW) && (h1.x_SE >= h2.x_SE)) 
 		&& ((h1.y_NW <= h2.y_NW) && (h1.y_SE >= h2.y_SE)))
 		return 1;
@@ -11,7 +12,13 @@ int collision_hitboxes(Hitbox h1, Hitbox h2)
 	if(((h2.x_NW <= h1.x_NW) && (h2.x_SE >= h1.x_SE)) 
 		&& ((h2.y_NW <= h1.y_NW) && (h2.y_SE >= h1.y_SE)))
 		return 1;
-
+	
+	
+	/*
+	if( (h1.x_NW < h2.x_SE) && (h1.x_SE > h2.x_NW)
+		&& (h1.y_NW < h2.y_SE) && (h1.y_SE > h2.y_NW) )
+		return 1;
+	*/
 	return 0;
 }
 
